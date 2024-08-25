@@ -10,5 +10,15 @@ export default defineSchema({
     email: v.string(),
   })
     .index("by_email", ["email"])
-    .index("by_clerkId", ["clerkId"]), //index make it faster to query n optimize the db
+    .index("by_clerkId", ["clerkId"])
+    .searchIndex("search_by_email", {
+      searchField: "email",
+    }),
+
+  requests: defineTable({
+    senderId: v.id("users"),
+    receiverId: v.id("users"),
+  })
+    .index("by_receiver", ["receiverId"])
+    .index("by_receiver_sender", ["receiverId", "senderId"]),
 });
