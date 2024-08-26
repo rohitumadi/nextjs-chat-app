@@ -1,5 +1,6 @@
 "use client";
 
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { ThemeToggle } from "@/components/ui/theme/ThemeToggle";
@@ -14,6 +15,7 @@ import Link from "next/link";
 
 const DesktopNav = () => {
   const paths = useNavigation();
+
   return (
     <Card className="hidden lg:px-2 lg:w-16 lg:flex-col lg:justify-between lg:py-4 lg:items-center lg:flex">
       <nav>
@@ -25,9 +27,15 @@ const DesktopNav = () => {
                   <TooltipTrigger>
                     <Button
                       variant={path.active ? "default" : "outline"}
+                      className="relative"
                       size="icon"
                     >
                       {path.icon}
+                      {path.count !== undefined && path.count > 0 && (
+                        <Badge className="absolute px-2  left-8 bottom-7">
+                          {path.count}
+                        </Badge>
+                      )}
                     </Button>
                   </TooltipTrigger>
                   <TooltipContent>{path.name}</TooltipContent>

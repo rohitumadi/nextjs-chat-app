@@ -21,9 +21,7 @@ const ItemList = ({ children, title, action }: Props) => {
         <h1 className="text-2xl font-semibold tracking-tight">{title}</h1>
         {action && action}
       </div>
-      <div className="flex flex-col gap-2 items-center justify-start w-full h-full">
-        {children}
-      </div>
+      <div className="flex flex-col gap-2   h-full">{children}</div>
     </Card>
   );
 };

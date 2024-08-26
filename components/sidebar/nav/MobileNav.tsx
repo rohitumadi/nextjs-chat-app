@@ -1,5 +1,6 @@
 "use client";
 
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { ThemeToggle } from "@/components/ui/theme/ThemeToggle";
@@ -29,8 +30,14 @@ const MobileNav = () => {
                     <Button
                       variant={path.active ? "default" : "outline"}
                       size="icon"
+                      className="relative"
                     >
                       {path.icon}
+                      {path.count !== undefined && path.count > 0 && (
+                        <Badge className="absolute px-2  left-8 bottom-7">
+                          {path.count}
+                        </Badge>
+                      )}
                     </Button>
                   </TooltipTrigger>
                   <TooltipContent>{path.name}</TooltipContent>
