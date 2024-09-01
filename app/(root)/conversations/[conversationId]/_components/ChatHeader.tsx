@@ -1,21 +1,20 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Card } from "@/components/ui/card";
-import { CircleArrowLeft, User } from "lucide-react";
+import { CircleArrowLeft, GroupIcon, User } from "lucide-react";
 import Link from "next/link";
 
 type Props = {
   imageUrl: string;
   name: string;
+  isGroup: boolean;
 };
-const Header = ({ imageUrl, name }: Props) => {
+const ChatHeader = ({ imageUrl, name, isGroup }: Props) => {
   return (
     <Card className="flex items-center justify-between gap-2 w-full p-2 ">
       <div className="flex items-center gap-2">
         <Avatar>
-          <AvatarImage src={imageUrl} alt={name} />
-          <AvatarFallback>
-            <User />
-          </AvatarFallback>
+          {isGroup ? <GroupIcon /> : <AvatarImage src={imageUrl} alt={name} />}
+          <AvatarFallback>{isGroup ? <GroupIcon /> : <User />}</AvatarFallback>
         </Avatar>
         <div className="flex flex-col">
           <p className="text-sm font-semibold">{name}</p>
@@ -27,4 +26,4 @@ const Header = ({ imageUrl, name }: Props) => {
     </Card>
   );
 };
-export default Header;
+export default ChatHeader;
