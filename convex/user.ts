@@ -36,14 +36,16 @@ export const getUserByEmail = internalQuery({
   },
 });
 
-export const searchUsersByEmail = query({
+export const searchUsersByUsername = query({
   args: {
-    email: v.string(),
+    username: v.string(),
   },
   handler: async (ctx, args) => {
     return await ctx.db
       .query("users")
-      .withSearchIndex("search_by_email", (q) => q.search("email", args.email))
+      .withSearchIndex("search_by_username", (q) =>
+        q.search("username", args.username)
+      )
       .collect();
   },
 });

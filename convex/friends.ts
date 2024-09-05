@@ -1,4 +1,4 @@
-import { ConvexError } from "convex/values";
+import { ConvexError, v } from "convex/values";
 import { query } from "./_generated/server";
 import { getUserByClerkId } from "./user";
 
@@ -30,7 +30,7 @@ export const getFriends = query({
       if (!user) {
         throw new ConvexError("User not found");
       }
-      friendEmails.push(user.email);
+      friendEmails.push(user);
     }
 
     for (const friend of friends2) {
@@ -38,7 +38,7 @@ export const getFriends = query({
       if (!user) {
         throw new ConvexError("User not found");
       }
-      friendEmails.push(user.email);
+      friendEmails.push(user);
     }
 
     return friendEmails;

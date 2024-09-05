@@ -1,5 +1,5 @@
 import { ConvexError, v } from "convex/values";
-import { query } from "./_generated/server";
+import { mutation, query } from "./_generated/server";
 import { getUserByClerkId } from "./user";
 
 export const getConversationById = query({
@@ -58,6 +58,74 @@ export const getConversationById = query({
         },
         otherMembers: null,
       };
+    } else {
+      const otherMembers = allMembers.filter(
+        (member) => member.memberId !== currentUser._id
+      );
+      const otherMembersDetails = await Promise.all(
+        otherMembers.map(async (member) => {
+          const otherUser = await ctx.db.get(member.memberId);
+          if (!otherUser) {
+            throw new ConvexError("Other user not found");
+          }
+          return {
+            ...otherUser,
+            lastSeenMessageId: member.lastSeenMessageId,
+          };
+        })
+      );
+
+      return {
+        conversation,
+        otherUser: null,
+        otherMembers: otherMembersDetails,
+      };
     }
+  },
+});
+
+export const createGroupConversation = mutation({
+  args: {
+    name: v.string(),
+    memberId: v.array(v.id("users")),
+  },
+  handler: async (ctx, args) => {
+    const sender = await ctx.auth.getUserIdentity();
+    if (!sender) {
+      throw new ConvexError("Not authenticated");
+    }
+    const currentUser = await getUserByClerkId(ctx, {
+      clerkId: sender.subject,
+    });
+    if (!currentUser) {
+      throw new ConvexError("User not found");
+    }
+    //check if group name is unique
+    const conversations = await ctx.db
+      .query("conversations")
+      .withSearchIndex("search_by_name", (q) => q.search("name", args.name))
+      .collect();
+
+    if (
+      conversations &&
+      conversations.some(
+        (c) => c.name?.toLowerCase() === args.name?.toLowerCase()
+      )
+    ) {
+      throw new ConvexError("Group name already exists");
+    }
+    const newGroupId = await ctx.db.insert("conversations", {
+      isGroup: true,
+      name: args.name,
+    });
+
+    await Promise.all([
+      [...args.memberId, currentUser._id].map(async (memberId) => {
+        ctx.db.insert("conversationMembers", {
+          conversationId: newGroupId,
+          memberId,
+        });
+      }),
+    ]);
   },
 });

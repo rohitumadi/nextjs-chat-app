@@ -10,7 +10,13 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { cn } from "@/lib/utils";
-import { CircleArrowLeft, GroupIcon, Settings, User } from "lucide-react";
+import {
+  CircleArrowLeft,
+  GroupIcon,
+  Settings,
+  User,
+  Users,
+} from "lucide-react";
 import Link from "next/link";
 
 type Props = {
@@ -31,8 +37,14 @@ const ChatHeader = ({ imageUrl, name, isGroup, options }: Props) => {
       </Link>
       <div className="flex items-center gap-2">
         <Avatar>
-          {isGroup ? <GroupIcon /> : <AvatarImage src={imageUrl} alt={name} />}
-          <AvatarFallback>{isGroup ? <GroupIcon /> : <User />}</AvatarFallback>
+          {isGroup ? (
+            <AvatarImage>
+              <Users />
+            </AvatarImage>
+          ) : (
+            <AvatarImage src={imageUrl} alt={name} />
+          )}
+          <AvatarFallback>{isGroup ? <Users /> : <User />}</AvatarFallback>
         </Avatar>
         <div className="flex flex-col">
           <p className="text-sm font-semibold">{name}</p>

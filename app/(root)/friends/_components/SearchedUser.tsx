@@ -1,5 +1,6 @@
 import { Badge } from "@/components/ui/badge";
 import { Id } from "@/convex/_generated/dataModel";
+import { Separator } from "@radix-ui/react-dropdown-menu";
 
 type Props = {
   _id: Id<"users">;
@@ -8,7 +9,8 @@ type Props = {
   username: string;
   imageUrl: string;
   clerkId: string;
-  friend: boolean;
+  friend?: boolean;
+  addingInGroup?: boolean;
   handleSelectUser: (user: any) => void;
 };
 
@@ -20,6 +22,7 @@ const SearchedUser = ({
   username,
   clerkId,
   friend,
+  addingInGroup,
 }: Props) => {
   return (
     <div
@@ -30,7 +33,7 @@ const SearchedUser = ({
           : "cursor-pointer hover:bg-secondary"
       }`}
       onClick={() => {
-        if (!friend) {
+        if (!friend || addingInGroup) {
           handleSelectUser({ _id, email, imageUrl, username, clerkId });
         }
       }}
@@ -42,7 +45,7 @@ const SearchedUser = ({
         width={32}
         height={32}
       />
-      <p>{email}</p>
+      <p>{username}</p>
       {friend && <Badge>Friend</Badge>}
     </div>
   );

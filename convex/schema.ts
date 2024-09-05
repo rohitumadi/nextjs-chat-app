@@ -11,8 +11,8 @@ export default defineSchema({
   })
     .index("by_email", ["email"])
     .index("by_clerkId", ["clerkId"])
-    .searchIndex("search_by_email", {
-      searchField: "email",
+    .searchIndex("search_by_username", {
+      searchField: "username",
     }),
 
   requests: defineTable({
@@ -35,6 +35,8 @@ export default defineSchema({
     name: v.optional(v.string()),
     isGroup: v.boolean(),
     lastMessageId: v.optional(v.id("messages")),
+  }).searchIndex("search_by_name", {
+    searchField: "name",
   }),
 
   conversationMembers: defineTable({

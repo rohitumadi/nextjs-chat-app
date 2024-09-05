@@ -2,7 +2,6 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Card } from "@/components/ui/card";
 import { Id } from "@/convex/_generated/dataModel";
 import { User } from "lucide-react";
-import Image from "next/image";
 import Link from "next/link";
 
 type Props = {
