@@ -10,6 +10,7 @@ type Props = {
 };
 const ConversationLayout = ({ children }: Props) => {
   const conversations = useQuery(api.conversations.getConversations);
+
   return (
     <>
       <ItemList title="Conversations">
@@ -22,6 +23,7 @@ const ConversationLayout = ({ children }: Props) => {
             conversations.map((conversation) =>
               conversation.conversation.isGroup ? null : (
                 <PrivateChat
+                  lastMessage={conversation.lastMessage?.message.content[0]}
                   key={conversation.conversation._id}
                   id={conversation.conversation._id}
                   imageUrl={conversation!.otherUser!.imageUrl}

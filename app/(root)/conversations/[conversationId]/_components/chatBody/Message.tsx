@@ -13,7 +13,7 @@ type Props = {
   content: string[];
   senderImageUrl: string;
   senderName: string;
-  lastByUser: boolean;
+
   createdAt: number;
   type: string;
 };
@@ -22,7 +22,7 @@ const Message = ({
   content,
   senderImageUrl,
   senderName,
-  lastByUser,
+
   createdAt,
   type,
 }: Props) => {
@@ -31,17 +31,13 @@ const Message = ({
   };
   return (
     <div
-      className={cn(
-        "flex flex-items-end",
-        fromCurrentUser && "justify-end",
-        lastByUser && "mb-2"
-      )}
+      className={cn("flex flex-items-end", fromCurrentUser && "justify-end")}
     >
       <ChatMessageList>
         <ChatBubble variant={fromCurrentUser ? "sent" : "received"}>
           <ChatBubbleAvatar src={senderImageUrl} />
           <ChatBubbleMessage variant={fromCurrentUser ? "sent" : "received"}>
-           <p>{content}</p>
+            <p>{content}</p>
             <ChatBubbleTimestamp timestamp={formatTime(createdAt)} />
           </ChatBubbleMessage>
         </ChatBubble>

@@ -9,8 +9,9 @@ type Props = {
   id: Id<"conversations">;
   imageUrl: string;
   username: string;
+  lastMessage?: string;
 };
-const PrivateChat = ({ id, imageUrl, username }: Props) => {
+const PrivateChat = ({ id, imageUrl, username, lastMessage }: Props) => {
   return (
     <Link href={`/conversations/${id}`} className=" flex items-center  gap-2 ">
       <Card className="flex items-center  gap-2 w-full p-2 hover:bg-accent">
@@ -22,9 +23,7 @@ const PrivateChat = ({ id, imageUrl, username }: Props) => {
         </Avatar>
         <div className="flex flex-col">
           <p className="text-sm font-semibold">{username}</p>
-          <p className="text-sm text-muted-foreground">
-            Start the conversation
-          </p>
+          <p className="text-sm text-muted-foreground">{lastMessage}</p>
         </div>
       </Card>
     </Link>

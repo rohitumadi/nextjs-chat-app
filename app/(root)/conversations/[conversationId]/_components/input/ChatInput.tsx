@@ -38,7 +38,6 @@ const ChatInput = () => {
     },
   });
   const onSubmit = async (data: z.infer<typeof chatMessageSchema>) => {
-    console.log(data);
     try {
       await createMessage({
         content: [data.content],

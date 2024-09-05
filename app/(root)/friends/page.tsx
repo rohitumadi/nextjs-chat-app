@@ -8,7 +8,7 @@ import Requests from "./_components/Requests";
 
 type Props = {};
 const FriendsPage = (props: Props) => {
-  //if someonse sends another request this variable will be updated
+  //if someone sends another request this variable will be updated
   //automatically by convex as it maintains a real time connection using the websocket
   const requests = useQuery(api.requests.getRequests);
   return (
