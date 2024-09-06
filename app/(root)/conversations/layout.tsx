@@ -6,16 +6,25 @@ import { Loader2 } from "lucide-react";
 import PrivateChat from "./_components/PrivateChat";
 import CreateGroupDialog from "./_components/CreateGroupDialog";
 import GroupChat from "./_components/GroupChat";
+import { useState } from "react";
 
 type Props = {
   children: React.ReactNode;
 };
 const ConversationLayout = ({ children }: Props) => {
   const conversations = useQuery(api.conversations.getConversations);
-
+  const [createGroupDialogOpen, setCreateGroupDialogOpen] = useState(false);
   return (
     <>
-      <ItemList title="Conversations" action={<CreateGroupDialog />}>
+      <ItemList
+        title="Conversations"
+        action={
+          <CreateGroupDialog
+            open={createGroupDialogOpen}
+            setOpen={setCreateGroupDialogOpen}
+          />
+        }
+      >
         {conversations ? (
           conversations.length === 0 ? (
             <p className="flex items-center justify-center">

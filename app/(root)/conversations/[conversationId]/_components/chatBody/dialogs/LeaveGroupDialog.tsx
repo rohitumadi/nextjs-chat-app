@@ -22,20 +22,20 @@ type Props = {
   open: boolean;
   setOpen: Dispatch<SetStateAction<boolean>>;
 };
-const RemoveFriendDialog = ({ conversationId, open, setOpen }: Props) => {
-  const { mutate: removeFriend, pending } = useMutationState(
-    api.friend.removeFriend
+const LeaveGroupDialog = ({ conversationId, open, setOpen }: Props) => {
+  const { mutate: leaveGroup, pending } = useMutationState(
+    api.conversation.leaveGroup
   );
-  async function handleRemoveFriend() {
+  async function handleLeaveGroup() {
     try {
-      await removeFriend({ conversationId });
-      toast.success("Friend removed");
+      await leaveGroup({ conversationId });
+      toast.success("Group left");
       setOpen(false);
     } catch (err) {
       if (err instanceof ConvexError) {
         toast.error(err.data);
       } else {
-        toast.error("Failed to remove friend");
+        toast.error("Failed to leave group");
       }
     }
   }
@@ -45,8 +45,7 @@ const RemoveFriendDialog = ({ conversationId, open, setOpen }: Props) => {
         <AlertDialogHeader>
           <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
           <AlertDialogDescription>
-            This action cannot be undone. This will permanently delete all your
-            messages with this friend.
+            This action cannot be undone. you will be removed from the group
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
@@ -54,7 +53,7 @@ const RemoveFriendDialog = ({ conversationId, open, setOpen }: Props) => {
           <AlertDialogAction
             className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
             disabled={pending}
-            onClick={handleRemoveFriend}
+            onClick={handleLeaveGroup}
           >
             Continue
           </AlertDialogAction>
@@ -63,4 +62,4 @@ const RemoveFriendDialog = ({ conversationId, open, setOpen }: Props) => {
     </AlertDialog>
   );
 };
-export default RemoveFriendDialog;
+export default LeaveGroupDialog;

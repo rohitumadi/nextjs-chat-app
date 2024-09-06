@@ -9,6 +9,9 @@ import ChatHeader from "./_components/ChatHeader";
 import ChatInput from "./_components/input/ChatInput";
 import { useState } from "react";
 import RemoveFriendDialog from "./_components/chatBody/dialogs/RemoveFriendDialog";
+import DeleteGroupDialog from "./_components/chatBody/dialogs/DeleteGroupDialog";
+import LeaveGroupDialog from "./_components/chatBody/dialogs/LeaveGroupDialog";
+import ShowGroupMembersDialog from "./_components/chatBody/dialogs/ShowGroupMembersDialog";
 
 type Props = {};
 const ConversationPage = (props: Props) => {
@@ -23,6 +26,8 @@ const ConversationPage = (props: Props) => {
   const [removeFriendDialogOpen, setRemoveFriendDialogOpen] = useState(false);
   const [deleteGroupDialogOpen, setDeleteGroupDialogOpen] = useState(false);
   const [leaveGroupDialogOpen, setLeaveGroupDialogOpen] = useState(false);
+  const [openGroupMembers, setOpenGroupMembers] = useState(false);
+
   const [callType, setCallType] = useState<"audio" | "video" | null>(null);
   return (
     <ConversationContainer>
@@ -31,12 +36,32 @@ const ConversationPage = (props: Props) => {
         setOpen={setRemoveFriendDialogOpen}
         conversationId={conversationId as Id<"conversations">}
       />
+      <ShowGroupMembersDialog
+        conversationId={conversationId as Id<"conversations">}
+        open={openGroupMembers}
+        setOpen={setOpenGroupMembers}
+      />
+      {isGroup && (
+        <>
+          <DeleteGroupDialog
+            conversationId={conversationId as Id<"conversations">}
+            open={deleteGroupDialogOpen}
+            setOpen={setDeleteGroupDialogOpen}
+          />
+          <LeaveGroupDialog
+            conversationId={conversationId as Id<"conversations">}
+            open={leaveGroupDialogOpen}
+            setOpen={setLeaveGroupDialogOpen}
+          />
+        </>
+      )}
       {conversation ? (
         <>
           <ChatHeader
             imageUrl={imageUrl || ""}
             name={name || ""}
             isGroup={isGroup || false}
+            showGroupMembers={() => setOpenGroupMembers(true)}
             options={
               isGroup
                 ? [

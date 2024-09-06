@@ -1,3 +1,4 @@
+"use client";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -10,14 +11,9 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { cn } from "@/lib/utils";
-import {
-  CircleArrowLeft,
-  GroupIcon,
-  Settings,
-  User,
-  Users,
-} from "lucide-react";
+import { CircleArrowLeft, Settings, User, Users } from "lucide-react";
 import Link from "next/link";
+import { useState } from "react";
 
 type Props = {
   imageUrl: string;
@@ -28,8 +24,15 @@ type Props = {
     onClick: () => void;
     destructive: boolean;
   }[];
+  showGroupMembers?: () => void;
 };
-const ChatHeader = ({ imageUrl, name, isGroup, options }: Props) => {
+const ChatHeader = ({
+  imageUrl,
+  name,
+  isGroup,
+  options,
+  showGroupMembers,
+}: Props) => {
   return (
     <Card className="flex items-center justify-between gap-2 w-full p-2 ">
       <Link className="lg:hidden" href={`/conversations`}>
@@ -46,9 +49,13 @@ const ChatHeader = ({ imageUrl, name, isGroup, options }: Props) => {
           )}
           <AvatarFallback>{isGroup ? <Users /> : <User />}</AvatarFallback>
         </Avatar>
-        <div className="flex flex-col">
-          <p className="text-sm font-semibold">{name}</p>
-        </div>
+
+        <p
+          onClick={showGroupMembers}
+          className="text-sm font-semibold underline underline-offset-2 cursor-pointer"
+        >
+          {name}
+        </p>
       </div>
       <div>
         {options && (

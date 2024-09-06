@@ -20,15 +20,15 @@ import { api } from "@/convex/_generated/api";
 import { useMutationState } from "@/hooks/useMutationState";
 import { useUser } from "@clerk/nextjs";
 
+import { Badge } from "@/components/ui/badge";
+import { Separator } from "@/components/ui/separator";
 import { Id } from "@/convex/_generated/dataModel";
 import { useQuery } from "convex/react";
 import { ConvexError } from "convex/values";
 import { CircleX, Users } from "lucide-react";
-import { useEffect, useState } from "react";
+import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { toast } from "sonner";
 import SearchedUser from "../../friends/_components/SearchedUser";
-import { Badge } from "@/components/ui/badge";
-import { Separator } from "@/components/ui/separator";
 
 type User = {
   _id: Id<"users">;
@@ -38,7 +38,11 @@ type User = {
   imageUrl: string;
   clerkId: string;
 };
-const CreateGroupDialog = () => {
+type Props = {
+  open: boolean;
+  setOpen: Dispatch<SetStateAction<boolean>>;
+};
+const CreateGroupDialog = ({ open, setOpen }: Props) => {
   const { mutate: createGroup, pending } = useMutationState(
     api.conversation.createGroupConversation
   );
@@ -99,6 +103,7 @@ const CreateGroupDialog = () => {
       setSelectedUser([]);
       setSelectedUserSet(new Set());
       setGroupName("");
+      setOpen(false);
     } catch (error) {
       if (error instanceof ConvexError) {
         toast.error(error.data);
