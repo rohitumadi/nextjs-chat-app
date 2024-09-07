@@ -52,7 +52,7 @@ const ChatHeader = ({
 
         <p
           onClick={showGroupMembers}
-          className="text-sm font-semibold underline underline-offset-2 cursor-pointer"
+          className="text-sm capitalize font-semibold cursor-pointer"
         >
           {name}
         </p>

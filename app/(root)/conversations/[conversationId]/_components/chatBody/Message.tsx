@@ -7,13 +7,14 @@ import {
 } from "@/src/components/ui/chat/chat-bubble";
 import { ChatMessageList } from "@/src/components/ui/chat/chat-message-list";
 import { format } from "date-fns";
+import { CheckCheck } from "lucide-react";
 
 type Props = {
   fromCurrentUser: boolean;
   content: string[];
   senderImageUrl: string;
   senderName: string;
-
+  // seen: boolean;
   createdAt: number;
   type: string;
 };
@@ -22,7 +23,7 @@ const Message = ({
   content,
   senderImageUrl,
   senderName,
-
+  // seen,
   createdAt,
   type,
 }: Props) => {
@@ -39,6 +40,9 @@ const Message = ({
           <ChatBubbleMessage variant={fromCurrentUser ? "sent" : "received"}>
             <p>{content}</p>
             <ChatBubbleTimestamp timestamp={formatTime(createdAt)} />
+            {/* {fromCurrentUser && (
+              <CheckCheck color={seen ? "#4FB6EC" : undefined} />
+            )} */}
           </ChatBubbleMessage>
         </ChatBubble>
       </ChatMessageList>

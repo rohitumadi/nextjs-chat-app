@@ -21,7 +21,7 @@ const PrivateChat = ({ id, imageUrl, username, lastMessage }: Props) => {
           </AvatarFallback>
         </Avatar>
         <div className="flex flex-col">
-          <p className="text-sm font-semibold">{username}</p>
+          <p className="text-sm font-semibold capitalize">{username}</p>
           <p className="text-sm text-muted-foreground">{lastMessage}</p>
         </div>
       </Card>

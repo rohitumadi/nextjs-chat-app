@@ -91,7 +91,6 @@ export const acceptRequest = mutation({
     id: v.id("requests"),
   },
   handler: async (ctx, args) => {
-    console.log("acceptRequest called");
     const sender = await ctx.auth.getUserIdentity();
     if (!sender) {
       throw new ConvexError("Not authenticated");

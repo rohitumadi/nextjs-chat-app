@@ -35,6 +35,7 @@ export default defineSchema({
     name: v.optional(v.string()),
     isGroup: v.boolean(),
     lastMessageId: v.optional(v.id("messages")),
+    adminId: v.optional(v.id("users")),
   }).searchIndex("search_by_name", {
     searchField: "name",
   }),

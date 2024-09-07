@@ -20,7 +20,7 @@ const GroupChat = ({ id, name, lastMessage, lastMessageBy }: Props) => {
           </AvatarFallback>
         </Avatar>
         <div className="flex flex-col truncate ">
-          <p className="text-sm font-semibold">{name}</p>
+          <p className="text-sm capitalize font-semibold">{name}</p>
           <p className="text-sm text-muted-foreground truncate">
             {lastMessage && `${lastMessageBy}:${lastMessage}`}
           </p>

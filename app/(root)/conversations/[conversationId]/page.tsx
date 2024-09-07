@@ -36,13 +36,14 @@ const ConversationPage = (props: Props) => {
         setOpen={setRemoveFriendDialogOpen}
         conversationId={conversationId as Id<"conversations">}
       />
-      <ShowGroupMembersDialog
-        conversationId={conversationId as Id<"conversations">}
-        open={openGroupMembers}
-        setOpen={setOpenGroupMembers}
-      />
+
       {isGroup && (
         <>
+          <ShowGroupMembersDialog
+            conversationId={conversationId as Id<"conversations">}
+            open={openGroupMembers}
+            setOpen={setOpenGroupMembers}
+          />
           <DeleteGroupDialog
             conversationId={conversationId as Id<"conversations">}
             open={deleteGroupDialogOpen}
@@ -85,7 +86,17 @@ const ConversationPage = (props: Props) => {
                   ]
             }
           />
-          <ChatBody />
+          <ChatBody
+            otherUsers={
+              isGroup
+                ? (conversation.otherMembers ?? []).filter(
+                    (user) => user !== null && user !== undefined
+                  )
+                : [otherUser].filter(
+                    (user) => user !== null && user !== undefined
+                  )
+            }
+          />
           <ChatInput />
         </>
       ) : (
