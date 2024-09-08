@@ -12,9 +12,10 @@ import { api } from "@/convex/_generated/api";
 import { useMutationState } from "@/hooks/useMutationState";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ConvexError } from "convex/values";
-import { SendHorizontal } from "lucide-react";
+import EmojiPicker from "emoji-picker-react";
+import { SendHorizontal, Smile } from "lucide-react";
 import { useParams } from "next/navigation";
-import { useRef } from "react";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import TextareaAutosize from "react-textarea-autosize";
 import { toast } from "sonner";
@@ -26,10 +27,10 @@ const chatMessageSchema = z.object({
 });
 const ChatInput = () => {
   const { conversationId } = useParams();
+  const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const { mutate: createMessage, pending } = useMutationState(
     api.message.createMessage
   );
-  const testAreaRef = useRef<HTMLTextAreaElement>(null);
   const form = useForm<z.infer<typeof chatMessageSchema>>({
     resolver: zodResolver(chatMessageSchema),
     defaultValues: {
@@ -52,25 +53,36 @@ const ChatInput = () => {
 
     form.reset();
   };
-  // const handleInputChange = (e: any) => {
-  //   const { value, selectionStart } = e.target;
-  //   if (selectionStart !== null) {
-  //     form.setValue("content", value);
-  //   }
-  // };
+
   const handleKeyDown = async (e: any) => {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
       await form.handleSubmit(onSubmit)();
     }
   };
+  const handleShowEmojiPicker = () => {
+    setShowEmojiPicker((prev) => !prev);
+  };
+
+  const handleEmojiClick = (emoji: any) => {
+    form.setValue("content", form.getValues("content") + emoji.emoji);
+  };
   return (
-    <Card className=" p-2 m-2">
+    <Card className=" p-2 m-2 relative  ">
+      {showEmojiPicker && (
+        <div className="absolute bottom-16">
+          <EmojiPicker onEmojiClick={handleEmojiClick} />
+        </div>
+      )}
       <Form {...form}>
         <form
           className="flex gap-2 items-center"
           onSubmit={form.handleSubmit(onSubmit)}
         >
+          <Smile
+            className="w-6 h-6 cursor-pointer"
+            onClick={handleShowEmojiPicker}
+          />
           <FormField
             control={form.control}
             name="content"
@@ -83,8 +95,6 @@ const ChatInput = () => {
                     rows={1}
                     {...field}
                     maxRows={3}
-                    // onChange={handleInputChange}
-                    // onClick={handleInputChange}
                     placeholder="Type a message"
                   />
                 </FormControl>
