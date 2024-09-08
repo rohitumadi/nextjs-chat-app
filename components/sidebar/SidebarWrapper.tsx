@@ -6,7 +6,7 @@ type Props = {
 };
 const SidebarWrapper = ({ children }: Props) => {
   return (
-    <div className="flex   w-full h-full p-4 gap-4 lg:flex-row">
+    <div className="flex flex-col  w-full h-full p-4 gap-4 lg:flex-row">
       <DesktopNav />
       <main className="h-[calc(100%-80px)] lg:h-full w-full flex gap-4">
         {children}
