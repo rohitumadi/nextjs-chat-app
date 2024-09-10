@@ -22,7 +22,7 @@ import { toast } from "sonner";
 import { z } from "zod";
 
 const chatMessageSchema = z.object({
-  content: z.string(),
+  content: z.string().min(1),
   type: z.string(),
 });
 const ChatInput = () => {
@@ -98,7 +98,6 @@ const ChatInput = () => {
                     placeholder="Type a message"
                   />
                 </FormControl>
-                <FormMessage />
               </FormItem>
             )}
           />
