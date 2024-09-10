@@ -22,7 +22,7 @@ import { toast } from "sonner";
 import { z } from "zod";
 
 const chatMessageSchema = z.object({
-  content: z.string().min(1),
+  content: z.string().trim().min(1),
   type: z.string(),
 });
 const ChatInput = () => {
@@ -91,7 +91,7 @@ const ChatInput = () => {
                 <FormControl>
                   <TextareaAutosize
                     onKeyDown={handleKeyDown}
-                    className="w-full outline-none border-0 placeholder:text-muted-foreground text-card-foreground resize-none "
+                    className="w-full bg-transparent outline-none border-0 placeholder:text-muted-foreground text-card-foreground resize-none "
                     rows={1}
                     {...field}
                     maxRows={3}

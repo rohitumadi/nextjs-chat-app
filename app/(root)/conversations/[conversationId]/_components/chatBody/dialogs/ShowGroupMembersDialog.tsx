@@ -31,7 +31,7 @@ const ShowGroupMembersDialog = ({ conversationId, open, setOpen }: Props) => {
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
           <DialogTitle>Group Members</DialogTitle>
-          <DialogDescription className="">
+          <DialogDescription className="p-2">
             <ScrollArea className="border rounded-lg">
               {groupMembers?.map((member) => (
                 <>
