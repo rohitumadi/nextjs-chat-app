@@ -1,13 +1,7 @@
 "use client";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormMessage,
-} from "@/components/ui/form";
+import { Form, FormControl, FormField, FormItem } from "@/components/ui/form";
 import { api } from "@/convex/_generated/api";
 import { useMutationState } from "@/hooks/useMutationState";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -41,7 +35,7 @@ const ChatInput = () => {
   const onSubmit = async (data: z.infer<typeof chatMessageSchema>) => {
     try {
       await createMessage({
-        content: [data.content],
+        content: [data.content.trim()],
         type: "text",
         conversationId: conversationId,
       });

@@ -21,6 +21,7 @@ const ChatBody = ({ otherUsers }: Props) => {
   const messagesWithUser = useQuery(api.messages.getMessages, {
     conversationId: conversationId as Id<"conversations">,
   });
+
   // const { mutate: markAsRead, pending } = useMutationState(
   //   api.conversation.markRead
   // );

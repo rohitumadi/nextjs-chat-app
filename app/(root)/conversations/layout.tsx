@@ -13,6 +13,9 @@ type Props = {
 };
 const ConversationLayout = ({ children }: Props) => {
   const conversations = useQuery(api.conversations.getConversations);
+  conversations?.sort(
+    (a, b) => b.conversation.lastModifiedAt - a.conversation.lastModifiedAt
+  );
   const [createGroupDialogOpen, setCreateGroupDialogOpen] = useState(false);
   return (
     <>

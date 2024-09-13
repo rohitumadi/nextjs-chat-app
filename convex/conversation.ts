@@ -118,6 +118,7 @@ export const createGroupConversation = mutation({
       isGroup: true,
       name: args.name,
       adminId: currentUser._id,
+      lastModifiedAt: Date.now(),
     });
 
     await Promise.all([

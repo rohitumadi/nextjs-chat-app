@@ -39,6 +39,7 @@ export const createMessage = mutation({
 
     await ctx.db.patch(args.conversationId, {
       lastMessageId: message,
+      lastModifiedAt: Date.now(),
     });
     return message;
   },

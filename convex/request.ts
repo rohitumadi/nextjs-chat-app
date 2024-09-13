@@ -107,6 +107,7 @@ export const acceptRequest = mutation({
     }
     const conversationId = await ctx.db.insert("conversations", {
       isGroup: false,
+      lastModifiedAt: Date.now(),
     });
     await ctx.db.insert("friends", {
       user1: currentUser._id,
