@@ -3,15 +3,17 @@ import ConversationContainer from "@/components/conversations/ConversationContai
 import { api } from "@/convex/_generated/api";
 import { Id } from "@/convex/_generated/dataModel";
 import { useQuery } from "convex/react";
+import { Loader2 } from "lucide-react";
 import { useParams } from "next/navigation";
-import ChatBody from "./_components/chatBody/ChatBody";
-import ChatHeader from "./_components/ChatHeader";
-import ChatInput from "./_components/input/ChatInput";
 import { useState } from "react";
-import RemoveFriendDialog from "./_components/chatBody/dialogs/RemoveFriendDialog";
+import ChatBody from "./_components/chatBody/ChatBody";
 import DeleteGroupDialog from "./_components/chatBody/dialogs/DeleteGroupDialog";
 import LeaveGroupDialog from "./_components/chatBody/dialogs/LeaveGroupDialog";
+import RemoveFriendDialog from "./_components/chatBody/dialogs/RemoveFriendDialog";
 import ShowGroupMembersDialog from "./_components/chatBody/dialogs/ShowGroupMembersDialog";
+import ChatHeader from "./_components/ChatHeader";
+import ChatInput from "./_components/input/ChatInput";
+import AddFriendGroupDialog from "./_components/chatBody/dialogs/AddFriendGroupDialog";
 
 type Props = {};
 const ConversationPage = (props: Props) => {
@@ -24,6 +26,8 @@ const ConversationPage = (props: Props) => {
   const name = isGroup ? conversation?.conversation.name : otherUser?.username;
   const imageUrl = otherUser?.imageUrl;
   const [removeFriendDialogOpen, setRemoveFriendDialogOpen] = useState(false);
+  const [addFriendToGroupDialogOpen, setAddFriendToGroupDialogOpen] =
+    useState(false);
   const [deleteGroupDialogOpen, setDeleteGroupDialogOpen] = useState(false);
   const [leaveGroupDialogOpen, setLeaveGroupDialogOpen] = useState(false);
   const [openGroupMembers, setOpenGroupMembers] = useState(false);
@@ -44,6 +48,14 @@ const ConversationPage = (props: Props) => {
             open={openGroupMembers}
             setOpen={setOpenGroupMembers}
           />
+          <AddFriendGroupDialog
+            otherMembers={
+              conversation?.otherMembers?.map((user) => user._id) || []
+            }
+            conversationId={conversationId as Id<"conversations">}
+            open={addFriendToGroupDialogOpen}
+            setOpen={setAddFriendToGroupDialogOpen}
+          />
           <DeleteGroupDialog
             conversationId={conversationId as Id<"conversations">}
             open={deleteGroupDialogOpen}
@@ -56,6 +68,7 @@ const ConversationPage = (props: Props) => {
           />
         </>
       )}
+
       {conversation ? (
         <>
           <ChatHeader
@@ -66,6 +79,11 @@ const ConversationPage = (props: Props) => {
             options={
               isGroup
                 ? [
+                    {
+                      label: "Add Friend",
+                      onClick: () => setAddFriendToGroupDialogOpen(true),
+                      destructive: false,
+                    },
                     {
                       label: "Leave Group",
                       onClick: () => setLeaveGroupDialogOpen(true),
@@ -101,7 +119,7 @@ const ConversationPage = (props: Props) => {
         </>
       ) : (
         <div className="flex items-center justify-center h-full">
-          Conversation not found
+          <Loader2 className="w-8 h-8 animate-spin" />
         </div>
       )}
     </ConversationContainer>

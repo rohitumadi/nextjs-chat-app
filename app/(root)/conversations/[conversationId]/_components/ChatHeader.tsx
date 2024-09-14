@@ -13,7 +13,6 @@ import {
 import { cn } from "@/lib/utils";
 import { CircleArrowLeft, Settings, User, Users } from "lucide-react";
 import Link from "next/link";
-import { useState } from "react";
 
 type Props = {
   imageUrl: string;

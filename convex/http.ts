@@ -1,4 +1,4 @@
-import { internal } from "./_generated/api";
+import { api, internal } from "./_generated/api";
 import { httpRouter } from "convex/server";
 import { Webhook } from "svix";
 import { httpAction } from "./_generated/server";
@@ -34,7 +34,7 @@ const handleClerkWebhook = httpAction(async (ctx, request) => {
   }
 
   if (event.type === "user.created") {
-    const user = await ctx.runQuery(internal.user.getUserByClerkId, {
+    const user = await ctx.runQuery(api.user.getUserByClerkId, {
       clerkId: event.data.id,
     });
     if (user) {

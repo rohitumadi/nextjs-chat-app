@@ -31,7 +31,7 @@ const ConversationLayout = ({ children }: Props) => {
         {conversations ? (
           conversations.length === 0 ? (
             <p className="flex items-center justify-center">
-              No conversations found
+              No conversations found Add Friends to get started
             </p>
           ) : (
             conversations.map((conversation) =>
@@ -57,7 +57,9 @@ const ConversationLayout = ({ children }: Props) => {
             )
           )
         ) : (
-          <Loader2 />
+          <div className="flex items-center h- justify-center">
+            <Loader2 className="animate-spin" />
+          </div>
         )}
       </ItemList>
       {children}

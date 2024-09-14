@@ -48,7 +48,6 @@ const ChatBody = ({ otherUsers }: Props) => {
   }, [messagesWithUser]);
 
   function getSeenStatus(messageId: Id<"messages">) {
-    console.log(otherUsers);
     const isSeen = otherUsers.every(
       (user) => user.lastSeenMessageId === messageId
     );
