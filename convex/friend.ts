@@ -1,6 +1,6 @@
 import { ConvexError, v } from "convex/values";
 import { mutation } from "./_generated/server";
-import { getUserByClerkId } from "./user";
+import { findUserByClerkId } from "./user";
 export const removeFriend = mutation({
   args: {
     conversationId: v.id("conversations"),
@@ -10,9 +10,7 @@ export const removeFriend = mutation({
     if (!sender) {
       throw new ConvexError("Not authenticated");
     }
-    const currentUser = await getUserByClerkId(ctx, {
-      clerkId: sender.subject,
-    });
+    const currentUser = await findUserByClerkId(ctx, sender.subject);
     if (!currentUser) {
       throw new ConvexError("User not found");
     }
@@ -49,19 +47,11 @@ export const removeFriend = mutation({
       )
       .collect();
 
-    if (messages.length > 0) {
-      await Promise.all([
-        messages.map(async (message) => ctx.db.delete(message._id)),
-        ctx.db.delete(friendship._id),
-        ctx.db.delete(conversation._id),
-        conversationMembers.map(async (member) => ctx.db.delete(member._id)),
-      ]);
-    } else {
-      await Promise.all([
-        ctx.db.delete(friendship._id),
-        ctx.db.delete(conversation._id),
-        conversationMembers.map(async (member) => ctx.db.delete(member._id)),
-      ]);
-    }
+    await Promise.all([
+      ...messages.map((message) => ctx.db.delete(message._id)),
+      ...conversationMembers.map((member) => ctx.db.delete(member._id)),
+      ctx.db.delete(friendship._id),
+      ctx.db.delete(conversation._id),
+    ]);
   },
 });

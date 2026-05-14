@@ -1,6 +1,38 @@
 import { ConvexError, v } from "convex/values";
 import { mutation, query } from "./_generated/server";
-import { getUserByClerkId } from "./user";
+import { findUserByClerkId } from "./user";
+import type { Id } from "./_generated/dataModel";
+import type { MutationCtx } from "./_generated/server";
+
+const deleteGroupForAdmin = async (
+  ctx: MutationCtx,
+  conversationId: Id<"conversations">,
+  adminId: Id<"users">
+) => {
+  const conversation = await ctx.db.get(conversationId);
+  if (!conversation) {
+    throw new ConvexError("conversation not found");
+  }
+  if (conversation.adminId !== adminId) {
+    throw new ConvexError("You are not the admin of this group");
+  }
+
+  const conversationMembers = await ctx.db
+    .query("conversationMembers")
+    .withIndex("by_conversationId", (q) => q.eq("conversationId", conversationId))
+    .collect();
+
+  const messages = await ctx.db
+    .query("messages")
+    .withIndex("by_conversationId", (q) => q.eq("conversationId", conversationId))
+    .collect();
+
+  await Promise.all([
+    ...messages.map((message) => ctx.db.delete(message._id)),
+    ...conversationMembers.map((member) => ctx.db.delete(member._id)),
+    ctx.db.delete(conversation._id),
+  ]);
+};
 
 export const getConversationById = query({
   args: v.object({
@@ -11,9 +43,7 @@ export const getConversationById = query({
     if (!sender) {
       throw new ConvexError("Not authenticated");
     }
-    const currentUser = await getUserByClerkId(ctx, {
-      clerkId: sender.subject,
-    });
+    const currentUser = await findUserByClerkId(ctx, sender.subject);
     if (!currentUser) {
       throw new ConvexError("User not found");
     }
@@ -94,9 +124,7 @@ export const createGroupConversation = mutation({
     if (!sender) {
       throw new ConvexError("Not authenticated");
     }
-    const currentUser = await getUserByClerkId(ctx, {
-      clerkId: sender.subject,
-    });
+    const currentUser = await findUserByClerkId(ctx, sender.subject);
     if (!currentUser) {
       throw new ConvexError("User not found");
     }
@@ -121,14 +149,14 @@ export const createGroupConversation = mutation({
       lastModifiedAt: Date.now(),
     });
 
-    await Promise.all([
-      [...args.memberId, currentUser._id].map(async (memberId) => {
-        ctx.db.insert("conversationMembers", {
+    await Promise.all(
+      [...args.memberId, currentUser._id].map((memberId) => {
+        return ctx.db.insert("conversationMembers", {
           conversationId: newGroupId,
           memberId,
         });
-      }),
-    ]);
+      })
+    );
   },
 });
 export const leaveGroup = mutation({
@@ -140,9 +168,7 @@ export const leaveGroup = mutation({
     if (!sender) {
       throw new ConvexError("Not authenticated");
     }
-    const currentUser = await getUserByClerkId(ctx, {
-      clerkId: sender.subject,
-    });
+    const currentUser = await findUserByClerkId(ctx, sender.subject);
     if (!currentUser) {
       throw new ConvexError("User not found");
     }
@@ -152,7 +178,7 @@ export const leaveGroup = mutation({
       throw new ConvexError("conversation not found");
     }
     if (conversation.adminId === currentUser._id) {
-      deleteGroup(ctx, { conversationId: args.conversationId });
+      await deleteGroupForAdmin(ctx, args.conversationId, currentUser._id);
       return;
     }
 
@@ -181,9 +207,7 @@ export const addFriendsToGroup = mutation({
     if (!sender) {
       throw new ConvexError("Not authenticated");
     }
-    const currentUser = await getUserByClerkId(ctx, {
-      clerkId: sender.subject,
-    });
+    const currentUser = await findUserByClerkId(ctx, sender.subject);
     if (!currentUser) {
       throw new ConvexError("User not found");
     }
@@ -196,9 +220,9 @@ export const addFriendsToGroup = mutation({
       throw new ConvexError("You are not the admin of this group");
     }
 
-    Promise.all(
-      args.friendsIds.map(async (friendId) => {
-        ctx.db.insert("conversationMembers", {
+    await Promise.all(
+      args.friendsIds.map((friendId) => {
+        return ctx.db.insert("conversationMembers", {
           conversationId: args.conversationId,
           memberId: friendId,
         });
@@ -216,9 +240,7 @@ export const removeFriendsFromGroup = mutation({
     if (!sender) {
       throw new ConvexError("Not authenticated");
     }
-    const currentUser = await getUserByClerkId(ctx, {
-      clerkId: sender.subject,
-    });
+    const currentUser = await findUserByClerkId(ctx, sender.subject);
     if (!currentUser) {
       throw new ConvexError("User not found");
     }
@@ -243,7 +265,7 @@ export const removeFriendsFromGroup = mutation({
       throw new ConvexError("Friend is not a member of this group");
     }
 
-    ctx.db.delete(membership?._id);
+    await ctx.db.delete(membership._id);
   },
 });
 export const deleteGroup = mutation({
@@ -255,50 +277,12 @@ export const deleteGroup = mutation({
     if (!sender) {
       throw new ConvexError("Not authenticated");
     }
-    const currentUser = await getUserByClerkId(ctx, {
-      clerkId: sender.subject,
-    });
+    const currentUser = await findUserByClerkId(ctx, sender.subject);
     if (!currentUser) {
       throw new ConvexError("User not found");
     }
 
-    const conversation = await ctx.db.get(args.conversationId);
-    if (!conversation) {
-      throw new ConvexError("conversation not found");
-    }
-    if (conversation.adminId !== currentUser._id) {
-      throw new ConvexError("You are not the admin of this group");
-    }
-
-    const conversationMembers = await ctx.db
-      .query("conversationMembers")
-      .withIndex("by_conversationId", (q) =>
-        q.eq("conversationId", args.conversationId)
-      )
-      .collect();
-    if (!conversationMembers) {
-      throw new ConvexError("conversation not found");
-    }
-
-    const messages = await ctx.db
-      .query("messages")
-      .withIndex("by_conversationId", (q) =>
-        q.eq("conversationId", args.conversationId)
-      )
-      .collect();
-
-    if (messages.length > 0) {
-      await Promise.all([
-        messages.map(async (message) => ctx.db.delete(message._id)),
-        ctx.db.delete(conversation._id),
-        conversationMembers.map(async (member) => ctx.db.delete(member._id)),
-      ]);
-    } else {
-      await Promise.all([
-        ctx.db.delete(conversation._id),
-        conversationMembers.map(async (member) => ctx.db.delete(member._id)),
-      ]);
-    }
+    await deleteGroupForAdmin(ctx, args.conversationId, currentUser._id);
   },
 });
 export const markRead = mutation({
@@ -312,9 +296,7 @@ export const markRead = mutation({
     if (!sender) {
       throw new ConvexError("Not authenticated");
     }
-    const currentUser = await getUserByClerkId(ctx, {
-      clerkId: sender.subject,
-    });
+    const currentUser = await findUserByClerkId(ctx, sender.subject);
     if (!currentUser) {
       throw new ConvexError("User not found");
     }

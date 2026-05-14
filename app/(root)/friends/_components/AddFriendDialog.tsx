@@ -41,7 +41,7 @@ type Props = {};
 
 const AddFriendDialog = (props: Props) => {
   const { mutate: sendRequest, pending } = useMutationState(
-    api.request.sendRequest
+    api.request.sendRequest,
   );
   const friends = useQuery(api.friends.getFriends);
   const friendsEmailList = friends?.map((friend) => friend.email);
@@ -52,7 +52,7 @@ const AddFriendDialog = (props: Props) => {
   const [debouncedSearchTerm, setDebouncedSearchTerm] = useState("");
   const [selectedUser, setSelectedUser] = useState<User[]>([]);
   const [selectedUserSet, setSelectedUserSet] = useState<Set<String>>(
-    new Set()
+    new Set(),
   );
   const currentUser = useUser();
 
@@ -66,7 +66,9 @@ const AddFriendDialog = (props: Props) => {
 
   const searchResults = useQuery(
     api.user.searchUsersByUsername,
-    debouncedSearchTerm.length >= 3 ? { username: debouncedSearchTerm } : "skip"
+    debouncedSearchTerm.length >= 3
+      ? { username: debouncedSearchTerm }
+      : "skip",
   );
   function handleSelectUser(user: User) {
     setSelectedUser((prev: User[]) => [...prev, user]);
@@ -102,12 +104,12 @@ const AddFriendDialog = (props: Props) => {
   return (
     <Dialog>
       <Tooltip>
-        <TooltipTrigger>
-          <Button variant="outline" size="icon">
-            <DialogTrigger>
+        <TooltipTrigger asChild>
+          <DialogTrigger asChild>
+            <Button variant="outline" size="icon">
               <UserPlusIcon className="w-4 h-4" />
-            </DialogTrigger>
-          </Button>
+            </Button>
+          </DialogTrigger>
         </TooltipTrigger>
         <TooltipContent>Add Friends</TooltipContent>
       </Tooltip>
@@ -116,80 +118,80 @@ const AddFriendDialog = (props: Props) => {
           <DialogTitle>Add Friends</DialogTitle>
         </DialogHeader>
         <DialogDescription>
-          <p className="mb-4">
+          <span className="mb-4">
             Send a friend request to your friends by entering their username
-          </p>
-          <form onSubmit={onSubmit} className="space-y-6">
-            <>
-              <Input
-                placeholder="Enter username"
-                value={searchTerm}
-                onChange={(e) => {
-                  setSearchTerm(e.target.value);
-                }}
-              />
-              {selectedUser.length > 0 && (
-                <div className="flex flex-wrap gap-2">
-                  {selectedUser.map((user) => (
-                    <Badge key={user._id} className="flex items-center gap-2">
-                      <img
-                        src={user.imageUrl}
-                        alt=""
-                        className="w-4 h-4 rounded-full"
-                      />
-                      {user.username}
+          </span>
+        </DialogDescription>
+        <form onSubmit={onSubmit} className="space-y-6">
+          <>
+            <Input
+              placeholder="Enter username"
+              value={searchTerm}
+              onChange={(e) => {
+                setSearchTerm(e.target.value);
+              }}
+            />
+            {selectedUser.length > 0 && (
+              <div className="flex flex-wrap gap-2">
+                {selectedUser.map((user) => (
+                  <Badge key={user._id} className="flex items-center gap-2">
+                    <img
+                      src={user.imageUrl}
+                      alt=""
+                      className="w-4 h-4 rounded-full"
+                    />
+                    {user.username}
 
-                      <CircleX
-                        onClick={() => handleRemoveUser(user)}
-                        className="w-4 h-4 cursor-pointer"
-                      />
-                    </Badge>
-                  ))}
+                    <CircleX
+                      onClick={() => handleRemoveUser(user)}
+                      className="w-4 h-4 cursor-pointer"
+                    />
+                  </Badge>
+                ))}
+              </div>
+            )}
+            {searchResults &&
+              searchResults.length > 0 &&
+              searchResults.some(
+                (user) =>
+                  !selectedUserSet.has(user.email) &&
+                  currentUser.user?.emailAddresses[0].emailAddress !==
+                    user.email,
+              ) && (
+                <div>
+                  <ScrollArea className="h-full px-3 py-2 w-full rounded-md border">
+                    {searchResults.map((user, index) => {
+                      if (
+                        selectedUserSet.has(user.email) ||
+                        currentUser.user?.emailAddresses[0].emailAddress ===
+                          user.email
+                      ) {
+                        return null;
+                      }
+                      return (
+                        <div key={user._id}>
+                          <SearchedUser
+                            {...user}
+                            friend={friendsEmailSet.has(user.email)}
+                            handleSelectUser={handleSelectUser}
+                          />
+                          {searchResults.length - 1 !== index && (
+                            <Separator className="my-2" />
+                          )}
+                        </div>
+                      );
+                    })}
+                  </ScrollArea>
                 </div>
               )}
-              {searchResults &&
-                searchResults.length > 0 &&
-                searchResults.some(
-                  (user) =>
-                    !selectedUserSet.has(user.email) &&
-                    currentUser.user?.emailAddresses[0].emailAddress !==
-                      user.email
-                ) && (
-                  <div>
-                    <ScrollArea className="h-full px-3 py-2 w-full rounded-md border">
-                      {searchResults.map((user, index) => {
-                        if (
-                          selectedUserSet.has(user.email) ||
-                          currentUser.user?.emailAddresses[0].emailAddress ===
-                            user.email
-                        ) {
-                          return null;
-                        }
-                        return (
-                          <div key={user._id}>
-                            <SearchedUser
-                              {...user}
-                              friend={friendsEmailSet.has(user.email)}
-                              handleSelectUser={handleSelectUser}
-                            />
-                            {searchResults.length - 1 !== index && (
-                              <Separator className="my-2" />
-                            )}
-                          </div>
-                        );
-                      })}
-                    </ScrollArea>
-                  </div>
-                )}
-            </>
+          </>
 
-            <DialogFooter>
-              <Button disabled={pending} type="submit">
-                Send Friend Request
-              </Button>
-            </DialogFooter>
-          </form>
-        </DialogDescription>
+          <DialogFooter>
+            <Button disabled={pending} type="submit">
+              Send Friend Request
+            </Button>
+          </DialogFooter>
+        </form>
       </DialogContent>
     </Dialog>
   );

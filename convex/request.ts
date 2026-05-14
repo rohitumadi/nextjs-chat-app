@@ -1,6 +1,6 @@
 import { mutation } from "./_generated/server";
 import { ConvexError, v } from "convex/values";
-import { getUserByClerkId, getUserByEmail } from "./user";
+import { findUserByClerkId, findUserByEmail } from "./user";
 export const sendRequest = mutation({
   args: {
     emails: v.array(v.string()),
@@ -13,15 +13,13 @@ export const sendRequest = mutation({
     if (args.emails.includes(sender.email ?? "")) {
       throw new ConvexError("Cannot send request to yourself");
     }
-    const currentUser = await getUserByClerkId(ctx, {
-      clerkId: sender.subject,
-    });
+    const currentUser = await findUserByClerkId(ctx, sender.subject);
     if (!currentUser) {
       throw new ConvexError("User not found");
     }
 
     for (const email of args.emails) {
-      const receiver = await getUserByEmail(ctx, { email });
+      const receiver = await findUserByEmail(ctx, email);
       if (!receiver) {
         throw new ConvexError("Receiver not found");
       }
@@ -36,7 +34,7 @@ export const sendRequest = mutation({
       }
     }
     for (const email of args.emails) {
-      const receiver = await getUserByEmail(ctx, { email });
+      const receiver = await findUserByEmail(ctx, email);
       const requestAlreadyReceived = await ctx.db
         .query("requests")
         .withIndex("by_receiver_sender", (q) =>
@@ -50,7 +48,7 @@ export const sendRequest = mutation({
 
     let requests = [];
     for (const email of args.emails) {
-      const receiver = await getUserByEmail(ctx, { email });
+      const receiver = await findUserByEmail(ctx, email);
       const request = await ctx.db.insert("requests", {
         senderId: currentUser._id,
         receiverId: receiver!._id,
@@ -71,9 +69,7 @@ export const rejectRequest = mutation({
       throw new ConvexError("Not authenticated");
     }
 
-    const currentUser = await getUserByClerkId(ctx, {
-      clerkId: sender.subject,
-    });
+    const currentUser = await findUserByClerkId(ctx, sender.subject);
     if (!currentUser) {
       throw new ConvexError("User not found");
     }
@@ -95,9 +91,7 @@ export const acceptRequest = mutation({
     if (!sender) {
       throw new ConvexError("Not authenticated");
     }
-    const currentUser = await getUserByClerkId(ctx, {
-      clerkId: sender.subject,
-    });
+    const currentUser = await findUserByClerkId(ctx, sender.subject);
     if (!currentUser) {
       throw new ConvexError("User not found");
     }

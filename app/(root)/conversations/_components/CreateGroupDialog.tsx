@@ -44,7 +44,7 @@ type Props = {
 };
 const CreateGroupDialog = ({ open, setOpen }: Props) => {
   const { mutate: createGroup, pending } = useMutationState(
-    api.conversation.createGroupConversation
+    api.conversation.createGroupConversation,
   );
   const [groupName, setGroupName] = useState("");
   const fetchedFriends = useQuery(api.friends.getFriends);
@@ -54,7 +54,7 @@ const CreateGroupDialog = ({ open, setOpen }: Props) => {
 
   const [selectedUser, setSelectedUser] = useState<User[]>([]);
   const [selectedUserSet, setSelectedUserSet] = useState<Set<String>>(
-    new Set()
+    new Set(),
   );
   const currentUser = useUser();
 
@@ -64,7 +64,7 @@ const CreateGroupDialog = ({ open, setOpen }: Props) => {
 
   useEffect(() => {
     const filteredFriendsList = friendsList?.filter((friend) =>
-      friend.username.toLowerCase().includes(searchTerm.toLowerCase())
+      friend.username.toLowerCase().includes(searchTerm.toLowerCase()),
     );
     setFriendsList(filteredFriendsList);
   }, [searchTerm]);
@@ -114,12 +114,12 @@ const CreateGroupDialog = ({ open, setOpen }: Props) => {
   return (
     <Dialog>
       <Tooltip>
-        <TooltipTrigger>
-          <Button variant="outline" size="icon">
-            <DialogTrigger>
+        <TooltipTrigger asChild>
+          <DialogTrigger asChild>
+            <Button variant="outline" size="icon">
               <Users className="w-4 h-4" />
-            </DialogTrigger>
-          </Button>
+            </Button>
+          </DialogTrigger>
         </TooltipTrigger>
         <TooltipContent>Create Group</TooltipContent>
       </Tooltip>
@@ -166,7 +166,7 @@ const CreateGroupDialog = ({ open, setOpen }: Props) => {
                   (user) =>
                     !selectedUserSet.has(user.email) &&
                     currentUser.user?.emailAddresses[0].emailAddress !==
-                      user.email
+                      user.email,
                 ) && (
                   <div>
                     <ScrollArea className="h-full px-3 py-2 w-full rounded-md border">

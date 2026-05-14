@@ -1,6 +1,6 @@
 import { ConvexError, v } from "convex/values";
 import { mutation } from "./_generated/server";
-import { getUserByClerkId } from "./user";
+import { findUserByClerkId } from "./user";
 export const createMessage = mutation({
   args: {
     conversationId: v.id("conversations"),
@@ -12,9 +12,7 @@ export const createMessage = mutation({
     if (!sender) {
       throw new ConvexError("Not authenticated");
     }
-    const currentUser = await getUserByClerkId(ctx, {
-      clerkId: sender.subject,
-    });
+    const currentUser = await findUserByClerkId(ctx, sender.subject);
     if (!currentUser) {
       throw new ConvexError("User not found");
     }

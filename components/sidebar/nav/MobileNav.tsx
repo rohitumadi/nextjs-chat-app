@@ -26,7 +26,7 @@ const MobileNav = () => {
             <li key={id}>
               <Link href={path.href}>
                 <Tooltip>
-                  <TooltipTrigger>
+                  <TooltipTrigger asChild>
                     <Button
                       variant={path.active ? "default" : "outline"}
                       size="icon"

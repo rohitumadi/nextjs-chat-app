@@ -1,6 +1,6 @@
 import { ConvexError, v } from "convex/values";
 import { query } from "./_generated/server";
-import { getUserByClerkId } from "./user";
+import { findUserByClerkId } from "./user";
 export const getMessages = query({
   args: {
     conversationId: v.id("conversations"),
@@ -10,9 +10,7 @@ export const getMessages = query({
     if (!sender) {
       throw new ConvexError("Not authenticated");
     }
-    const currentUser = await getUserByClerkId(ctx, {
-      clerkId: sender.subject,
-    });
+    const currentUser = await findUserByClerkId(ctx, sender.subject);
     if (!currentUser) {
       throw new ConvexError("User not found");
     }

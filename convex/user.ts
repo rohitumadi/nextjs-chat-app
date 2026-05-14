@@ -1,5 +1,32 @@
-import { internalMutation, internalQuery, query } from "./_generated/server";
+import {
+  internalMutation,
+  internalQuery,
+  MutationCtx,
+  query,
+  QueryCtx,
+} from "./_generated/server";
 import { v } from "convex/values";
+
+export const findUserByClerkId = async (
+  ctx: QueryCtx | MutationCtx,
+  clerkId: string
+) => {
+  return await ctx.db
+    .query("users")
+    .withIndex("by_clerkId", (q) => q.eq("clerkId", clerkId))
+    .unique();
+};
+
+export const findUserByEmail = async (
+  ctx: QueryCtx | MutationCtx,
+  email: string
+) => {
+  return await ctx.db
+    .query("users")
+    .withIndex("by_email", (q) => q.eq("email", email))
+    .unique();
+};
+
 export const createUser = internalMutation({
   args: {
     username: v.string(),
@@ -17,10 +44,7 @@ export const getUserByClerkId = query({
     clerkId: v.string(),
   },
   handler: async (ctx, args) => {
-    return await ctx.db
-      .query("users")
-      .withIndex("by_clerkId", (q) => q.eq("clerkId", args.clerkId))
-      .unique();
+    return await findUserByClerkId(ctx, args.clerkId);
   },
 });
 
@@ -29,10 +53,7 @@ export const getUserByEmail = internalQuery({
     email: v.string(),
   },
   handler: async (ctx, args) => {
-    return await ctx.db
-      .query("users")
-      .withIndex("by_email", (q) => q.eq("email", args.email))
-      .unique();
+    return await findUserByEmail(ctx, args.email);
   },
 });
 
