@@ -33,7 +33,7 @@ const ChatHeader = ({
   showGroupMembers,
 }: Props) => {
   return (
-    <Card className="flex items-center justify-between gap-2 w-full p-2 ">
+    <Card className="flex flex-row items-center justify-between gap-2 w-full p-2 ">
       <Link className="lg:hidden" href={`/conversations`}>
         <CircleArrowLeft className="w-6 h-6" />
       </Link>
@@ -73,7 +73,7 @@ const ChatHeader = ({
                     onClick={option.onClick}
                     className={cn(
                       "cursor-pointer font-semibold",
-                      option.destructive ? "text-destructive" : ""
+                      option.destructive ? "text-destructive" : "",
                     )}
                   >
                     {option.label}

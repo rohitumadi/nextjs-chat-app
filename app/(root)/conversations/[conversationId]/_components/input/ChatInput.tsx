@@ -3,13 +3,15 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Form, FormControl, FormField, FormItem } from "@/components/ui/form";
 import { api } from "@/convex/_generated/api";
+import type { Id } from "@/convex/_generated/dataModel";
 import { useMutationState } from "@/hooks/useMutationState";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ConvexError } from "convex/values";
-import EmojiPicker from "emoji-picker-react";
+import type { EmojiClickData } from "emoji-picker-react";
 import { SendHorizontal, Smile } from "lucide-react";
+import dynamic from "next/dynamic";
 import { useParams } from "next/navigation";
-import { useState } from "react";
+import { useState, type KeyboardEvent } from "react";
 import { useForm } from "react-hook-form";
 import TextareaAutosize from "react-textarea-autosize";
 import { toast } from "sonner";
@@ -19,6 +21,11 @@ const chatMessageSchema = z.object({
   content: z.string().trim().min(1),
   type: z.string(),
 });
+
+const EmojiPicker = dynamic(() => import("emoji-picker-react"), {
+  ssr: false,
+});
+
 const ChatInput = () => {
   const { conversationId } = useParams();
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
@@ -37,7 +44,7 @@ const ChatInput = () => {
       await createMessage({
         content: [data.content.trim()],
         type: "text",
-        conversationId: conversationId,
+        conversationId: conversationId as Id<"conversations">,
       });
     } catch (error) {
       toast.error(
@@ -48,7 +55,7 @@ const ChatInput = () => {
     form.reset();
   };
 
-  const handleKeyDown = async (e: any) => {
+  const handleKeyDown = async (e: KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
       await form.handleSubmit(onSubmit)();
@@ -58,14 +65,23 @@ const ChatInput = () => {
     setShowEmojiPicker((prev) => !prev);
   };
 
-  const handleEmojiClick = (emoji: any) => {
-    form.setValue("content", form.getValues("content") + emoji.emoji);
+  const handleEmojiClick = (emoji: EmojiClickData) => {
+    form.setValue("content", `${form.getValues("content")}${emoji.emoji}`, {
+      shouldDirty: true,
+      shouldTouch: true,
+      shouldValidate: true,
+    });
+    form.setFocus("content");
   };
   return (
-    <Card className=" p-2 m-2 relative  ">
+    <Card className="relative m-2 overflow-visible p-2">
       {showEmojiPicker && (
-        <div className="absolute bottom-16">
-          <EmojiPicker onEmojiClick={handleEmojiClick} />
+        <div className="absolute bottom-full left-2 z-50 mb-2">
+          <EmojiPicker
+            onEmojiClick={handleEmojiClick}
+            width={320}
+            height={380}
+          />
         </div>
       )}
       <Form {...form}>
@@ -73,10 +89,16 @@ const ChatInput = () => {
           className="flex gap-2 items-center"
           onSubmit={form.handleSubmit(onSubmit)}
         >
-          <Smile
-            className="w-6 h-6 cursor-pointer"
+          <Button
+            aria-label="Toggle emoji picker"
+            aria-expanded={showEmojiPicker}
+            size="icon"
+            type="button"
+            variant="ghost"
             onClick={handleShowEmojiPicker}
-          />
+          >
+            <Smile className="h-5 w-5" />
+          </Button>
           <FormField
             control={form.control}
             name="content"

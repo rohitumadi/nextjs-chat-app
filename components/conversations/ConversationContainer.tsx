@@ -5,7 +5,7 @@ type Props = {
 };
 const ConversationContainer = ({ children }: Props) => {
   return (
-    <Card className="w-full h-[calc(100svh-32px)] lg:h-full  flex flex-col gap-2">
+    <Card className="h-[calc(100svh-32px)] min-h-0 w-full gap-0 overflow-hidden rounded-xl bg-card/95 p-0 shadow-sm lg:h-full">
       {children}
     </Card>
   );
